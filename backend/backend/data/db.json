@@ -1,0 +1,265 @@
+{
+  "users": [
+    {
+      "_id": "380dcded-cf78-4561-9eb7-8f6bdd7be335",
+      "createdAt": "2026-08-23T09:22:02.930Z",
+      "updatedAt": "2026-08-23T09:22:02.931Z",
+      "name": "System Administrator",
+      "email": "admin@foodshare.org",
+      "password": "$2a$10$iIfB6hwqVcsH1y36I6V5V.WuQzU12lVeaBenEHeXh0GEW3414DX5i",
+      "role": "Admin",
+      "contactNumber": "+91 77765 43210",
+      "address": "FoodShare HQ, Tech Park, Ahmedabad - 380054"
+    },
+    {
+      "_id": "50e4d553-4f9b-47d0-ae70-3fa26bf6bff5",
+      "createdAt": "2026-08-23T09:22:02.937Z",
+      "updatedAt": "2026-08-23T09:22:02.937Z",
+      "name": "Green Palace Banquet",
+      "email": "donor@foodshare.org",
+      "password": "$2a$10$iIfB6hwqVcsH1y36I6V5V.WuQzU12lVeaBenEHeXh0GEW3414DX5i",
+      "role": "Donor",
+      "contactNumber": "+91 98765 43210",
+      "address": "Sector 15, Near City Palace, Ahmedabad, Gujarat - 380015"
+    },
+    {
+      "_id": "94a25d80-6d1e-4be6-86cd-d82605fa29e9",
+      "createdAt": "2026-08-23T09:22:02.943Z",
+      "updatedAt": "2026-08-23T09:22:02.943Z",
+      "name": "Metro Bakery & Confectionery",
+      "email": "bakery@foodshare.org",
+      "password": "$2a$10$iIfB6hwqVcsH1y36I6V5V.WuQzU12lVeaBenEHeXh0GEW3414DX5i",
+      "role": "Donor",
+      "contactNumber": "+91 99000 11223",
+      "address": "Shop 4, Market Plaza, Ahmedabad, Gujarat - 380015"
+    },
+    {
+      "_id": "233841d1-2b78-4f22-bd91-6ee9348592ee",
+      "createdAt": "2026-08-23T09:22:02.949Z",
+      "updatedAt": "2026-08-23T09:22:02.949Z",
+      "name": "Organic Harvest Farms",
+      "email": "farms@foodshare.org",
+      "password": "$2a$10$iIfB6hwqVcsH1y36I6V5V.WuQzU12lVeaBenEHeXh0GEW3414DX5i",
+      "role": "Donor",
+      "contactNumber": "+91 99111 22334",
+      "address": "Village Rancharda, Sanand Road, Ahmedabad, Gujarat - 382115"
+    },
+    {
+      "_id": "d64a277d-72b8-4dce-9b18-1f0683bf2616",
+      "createdAt": "2026-08-23T09:22:02.955Z",
+      "updatedAt": "2026-08-23T09:22:02.955Z",
+      "name": "Feeding Hands Foundation",
+      "email": "ngo@foodshare.org",
+      "password": "$2a$10$iIfB6hwqVcsH1y36I6V5V.WuQzU12lVeaBenEHeXh0GEW3414DX5i",
+      "role": "NGO",
+      "contactNumber": "+91 88665 43210",
+      "address": "Shanti Ashram Campus, Ashram Road, Ahmedabad, Gujarat - 380009"
+    },
+    {
+      "_id": "5e36133a-3c0f-4922-899f-892cfd8a2cbe",
+      "createdAt": "2026-08-23T09:22:02.961Z",
+      "updatedAt": "2026-08-23T09:22:02.961Z",
+      "name": "Robin Hood Army Volunteers",
+      "email": "robinhood@foodshare.org",
+      "password": "$2a$10$iIfB6hwqVcsH1y36I6V5V.WuQzU12lVeaBenEHeXh0GEW3414DX5i",
+      "role": "NGO",
+      "contactNumber": "+91 88776 55443",
+      "address": "Youth Hub, CG Road, Ahmedabad, Gujarat - 380009"
+    },
+    {
+      "_id": "8fe92f49-8e58-41c0-844f-fc61ab02a97d",
+      "createdAt": "2026-08-23T10:13:08.166Z",
+      "updatedAt": "2026-08-23T10:13:08.166Z",
+      "name": "..",
+      "email": "user@gmail.com",
+      "password": "$2a$10$8T/XXvAavslFPrlNwqSIQe0KLGSBNSyt90rrdQz6mVzeGPaLyM8rS",
+      "role": "Donor",
+      "contactNumber": "1111111111",
+      "address": "11"
+    }
+  ],
+  "donations": [
+    {
+      "_id": "8fa98226-181c-408b-b214-d54bd6717206",
+      "createdAt": "2026-08-23T09:22:02.974Z",
+      "updatedAt": "2026-08-23T09:22:02.974Z",
+      "foodName": "Veg Biryani (Buffet Surplus)",
+      "category": "Cooked Meal",
+      "quantity": "40 plates",
+      "expiryDate": "2026-08-24T09:22:02.963Z",
+      "pickupAddress": "Sector 15, Near City Palace, Ahmedabad, Gujarat - 380015",
+      "description": "Extra buffet surplus biryani from a wedding reception. Hygienically stored in steel containers. Keep refrigerated.",
+      "donor": "50e4d553-4f9b-47d0-ae70-3fa26bf6bff5",
+      "donorName": "Green Palace Banquet",
+      "status": "Available"
+    },
+    {
+      "_id": "24ec21b0-36ee-40ef-b7f6-f8719443a218",
+      "createdAt": "2026-08-23T09:22:02.980Z",
+      "updatedAt": "2026-08-23T09:22:02.980Z",
+      "foodName": "Assorted Breads & Buns",
+      "category": "Bakery",
+      "quantity": "60 pieces",
+      "expiryDate": "2026-08-25T09:22:02.972Z",
+      "pickupAddress": "Shop 4, Market Plaza, Ahmedabad, Gujarat - 380015",
+      "description": "Freshly baked buns and loaves left over from today sales. Good for consumption till tomorrow night.",
+      "donor": "94a25d80-6d1e-4be6-86cd-d82605fa29e9",
+      "donorName": "Metro Bakery & Confectionery",
+      "status": "Requested"
+    },
+    {
+      "_id": "6245a0e6-28cf-44c7-ad83-93f61b6e9677",
+      "createdAt": "2026-08-23T09:22:02.987Z",
+      "updatedAt": "2026-08-23T09:22:02.987Z",
+      "foodName": "Paneer Curry & Rotis",
+      "category": "Cooked Meal",
+      "quantity": "Serves 80",
+      "expiryDate": "2026-08-23T21:22:02.972Z",
+      "pickupAddress": "Sector 15, Near City Palace, Ahmedabad, Gujarat - 380015",
+      "description": "Surplus dinner from corporate catering event. Paneer butter masala and butter rotis. Packed hot.",
+      "donor": "50e4d553-4f9b-47d0-ae70-3fa26bf6bff5",
+      "donorName": "Green Palace Banquet",
+      "status": "Reserved"
+    },
+    {
+      "_id": "a9b91a0a-e1f0-4d10-bce5-da1a5edf0092",
+      "createdAt": "2026-08-23T09:22:02.994Z",
+      "updatedAt": "2026-08-23T09:22:02.994Z",
+      "foodName": "Fresh Vegetables Crate",
+      "category": "Fruits & Vegetables",
+      "quantity": "25 kg",
+      "expiryDate": "2026-08-25T09:22:02.972Z",
+      "pickupAddress": "Village Rancharda, Sanand Road, Ahmedabad, Gujarat - 382115",
+      "description": "Slightly outer-leaf damaged but fully edible cauliflowers, tomatoes, and spinach harvested yesterday.",
+      "donor": "233841d1-2b78-4f22-bd91-6ee9348592ee",
+      "donorName": "Organic Harvest Farms",
+      "status": "Available"
+    },
+    {
+      "_id": "ca414a55-ea98-4a21-b53c-5788a4818a1f",
+      "createdAt": "2026-08-23T09:22:03.001Z",
+      "updatedAt": "2026-08-23T09:22:03.001Z",
+      "foodName": "Daal Khichdi & Sabji",
+      "category": "Cooked Meal",
+      "quantity": "100 plates",
+      "expiryDate": "2026-08-22T09:22:02.995Z",
+      "pickupAddress": "Sector 15, Near City Palace, Ahmedabad, Gujarat - 380015",
+      "description": "Surplus food from family gathering.",
+      "donor": "50e4d553-4f9b-47d0-ae70-3fa26bf6bff5",
+      "donorName": "Green Palace Banquet",
+      "status": "Completed"
+    }
+  ],
+  "requests": [
+    {
+      "_id": "207ff7d9-5e09-495d-9ee3-8a26a1056199",
+      "createdAt": "2026-08-23T09:22:03.008Z",
+      "updatedAt": "2026-08-23T09:22:03.008Z",
+      "donation": "24ec21b0-36ee-40ef-b7f6-f8719443a218",
+      "ngo": "d64a277d-72b8-4dce-9b18-1f0683bf2616",
+      "ngoName": "Feeding Hands Foundation",
+      "status": "Pending",
+      "message": "We can collect this and distribute it to children at the shelter tonight."
+    },
+    {
+      "_id": "42a12056-a8fa-43b8-9c1a-81c199a925aa",
+      "createdAt": "2026-08-23T09:22:03.014Z",
+      "updatedAt": "2026-08-23T09:22:03.014Z",
+      "donation": "6245a0e6-28cf-44c7-ad83-93f61b6e9677",
+      "ngo": "d64a277d-72b8-4dce-9b18-1f0683bf2616",
+      "ngoName": "Feeding Hands Foundation",
+      "status": "Approved",
+      "message": "Ideal for our community kitchen dinner service."
+    },
+    {
+      "_id": "001c96fd-2b0e-4345-a989-3da004210e16",
+      "createdAt": "2026-08-23T09:22:03.021Z",
+      "updatedAt": "2026-08-23T09:22:03.021Z",
+      "donation": "ca414a55-ea98-4a21-b53c-5788a4818a1f",
+      "ngo": "5e36133a-3c0f-4922-899f-892cfd8a2cbe",
+      "ngoName": "Robin Hood Army Volunteers",
+      "status": "Completed",
+      "message": "Requesting to distribute at slums near CG road."
+    }
+  ],
+  "pickups": [
+    {
+      "_id": "6ca99bda-3120-4eb6-bf02-49f5e5856073",
+      "createdAt": "2026-08-23T09:22:03.027Z",
+      "updatedAt": "2026-08-23T09:22:03.027Z",
+      "request": "42a12056-a8fa-43b8-9c1a-81c199a925aa",
+      "ngo": "d64a277d-72b8-4dce-9b18-1f0683bf2616",
+      "donor": "50e4d553-4f9b-47d0-ae70-3fa26bf6bff5",
+      "donation": "6245a0e6-28cf-44c7-ad83-93f61b6e9677",
+      "pickupDate": "2026-08-24",
+      "pickupTime": "18:30",
+      "pickupAddress": "Sector 15, Near City Palace, Ahmedabad, Gujarat - 380015",
+      "status": "Scheduled"
+    },
+    {
+      "_id": "515be5b9-030b-4109-901f-8df4ee851a24",
+      "createdAt": "2026-08-23T09:22:03.034Z",
+      "updatedAt": "2026-08-23T09:22:03.034Z",
+      "request": "001c96fd-2b0e-4345-a989-3da004210e16",
+      "ngo": "5e36133a-3c0f-4922-899f-892cfd8a2cbe",
+      "donor": "50e4d553-4f9b-47d0-ae70-3fa26bf6bff5",
+      "donation": "ca414a55-ea98-4a21-b53c-5788a4818a1f",
+      "pickupDate": "2026-08-22",
+      "pickupTime": "16:00",
+      "pickupAddress": "Sector 15, Near City Palace, Ahmedabad, Gujarat - 380015",
+      "status": "Delivered"
+    }
+  ],
+  "notifications": [
+    {
+      "_id": "e508a738-a3f4-4eaf-9216-04a121ca69f5",
+      "createdAt": "2026-08-23T09:22:03.041Z",
+      "updatedAt": "2026-08-23T09:22:03.041Z",
+      "recipient": "All",
+      "title": "Platform Initialized",
+      "message": "FoodShare platform seeded with initial demo accounts and listings successfully.",
+      "type": "Info",
+      "read": false
+    },
+    {
+      "_id": "4ad17241-6c31-43f2-ba70-6d4e01a8cbf7",
+      "createdAt": "2026-08-23T09:22:03.049Z",
+      "updatedAt": "2026-08-23T09:22:03.049Z",
+      "recipient": "50e4d553-4f9b-47d0-ae70-3fa26bf6bff5",
+      "title": "Food Request Received",
+      "message": "NGO \"Feeding Hands Foundation\" requested your donation: \"Paneer Curry & Rotis\".",
+      "type": "Request",
+      "read": false
+    },
+    {
+      "_id": "8b7d70c8-2389-429c-9616-b6dbb7764e6d",
+      "createdAt": "2026-08-23T09:22:03.056Z",
+      "updatedAt": "2026-08-23T09:22:03.056Z",
+      "recipient": "d64a277d-72b8-4dce-9b18-1f0683bf2616",
+      "title": "Request Approved!",
+      "message": "Your request for \"Paneer Curry & Rotis\" has been approved by \"Green Palace Banquet\". Please schedule pickup.",
+      "type": "Approval",
+      "read": false
+    },
+    {
+      "_id": "49e89d0e-8af0-41a5-b101-a175846149c5",
+      "createdAt": "2026-08-23T10:13:08.170Z",
+      "updatedAt": "2026-08-23T10:13:08.170Z",
+      "recipient": "8fe92f49-8e58-41c0-844f-fc61ab02a97d",
+      "title": "Welcome to FoodShare!",
+      "message": "Hello .., your account as a Donor has been successfully registered.",
+      "type": "Registration",
+      "read": false
+    },
+    {
+      "_id": "6130b445-52bb-4410-a66a-de74c2dafeeb",
+      "createdAt": "2026-08-23T10:13:08.174Z",
+      "updatedAt": "2026-08-23T10:13:08.174Z",
+      "recipient": "All",
+      "title": "New User Registered",
+      "message": "A new user .. (Donor) has registered on the platform.",
+      "type": "Registration",
+      "read": false
+    }
+  ]
+}
