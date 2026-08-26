@@ -1747,7 +1747,12 @@ body.dark .badge-icon-circle.globe-bg {
   z-index: 100;
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--border);
-  background: var(--card-bg) !important;
+  background-color: #ffffff !important;
+}
+
+body.dark .mobile-navbar-dropdown {
+  background-color: #1e293b !important;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .mobile-nav-item {

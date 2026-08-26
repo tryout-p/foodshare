@@ -216,7 +216,7 @@ const Navbar = ({ onMenuToggle }) => {
 
               {/* Mobile Navbar Menu Dropdown */}
               {showMobileMenu && (
-                <div className="mobile-navbar-dropdown glass-panel">
+                <div className="mobile-navbar-dropdown">
                   <Link to="/" className={`mobile-nav-item ${isActive('/') ? 'active' : ''}`}>Home</Link>
                   <Link to="/about" className={`mobile-nav-item ${isActive('/about') ? 'active' : ''}`}>About</Link>
                   <Link to="/contact" className={`mobile-nav-item ${isActive('/contact') ? 'active' : ''}`}>Contact</Link>
