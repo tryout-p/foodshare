@@ -2,6 +2,12 @@ import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { User, Phone, MapPin, KeyRound, Save } from 'lucide-react';
 
+const validatePhone = (phone) => {
+  if (!phone || phone.trim() === '') return true;
+  const digits = phone.replace(/\D/g, '');
+  return digits.length >= 10 && digits.length <= 13;
+};
+
 const Profile = () => {
   const { user, updateProfile, changePassword } = useContext(AuthContext);
 
@@ -31,6 +37,9 @@ const Profile = () => {
     setProfileLoading(true);
 
     try {
+      if (contactNumber && !validatePhone(contactNumber)) {
+        throw new Error('Please enter a valid mobile number (10-13 digits)');
+      }
       await updateProfile(name, contactNumber, address);
       setProfileMsg('Profile updated successfully!');
     } catch (err) {

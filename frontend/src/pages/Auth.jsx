@@ -3,6 +3,17 @@ import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { Leaf, ArrowLeft, Heart, Gift } from 'lucide-react';
 
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email.trim());
+};
+
+const validatePhone = (phone) => {
+  if (!phone || phone.trim() === '') return true;
+  const digits = phone.replace(/\D/g, '');
+  return digits.length >= 10 && digits.length <= 13;
+};
+
 const Auth = () => {
   const { user, login, register, error: authError } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -71,10 +82,19 @@ const Auth = () => {
         if (!email || !password) {
           throw new Error('Please fill in all fields');
         }
+        if (!validateEmail(email)) {
+          throw new Error('Please enter a valid email address');
+        }
         await login(email, password);
       } else {
         if (!name || !email || !password || !role) {
           throw new Error('Please fill in all required fields');
+        }
+        if (!validateEmail(email)) {
+          throw new Error('Please enter a valid email address');
+        }
+        if (contactNumber && !validatePhone(contactNumber)) {
+          throw new Error('Please enter a valid contact number (10-13 digits)');
         }
         await register(name, email, password, role, contactNumber, address);
       }

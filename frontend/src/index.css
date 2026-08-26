@@ -826,6 +826,10 @@ body.dark .badge-icon-circle.globe-bg {
   transition: var(--transition);
 }
 
+.mobile-sidebar-toggle {
+  display: none;
+}
+
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);
@@ -837,7 +841,31 @@ body.dark .badge-icon-circle.globe-bg {
 
   .main-panel {
     margin-left: 0;
-    padding: 1rem;
+    padding: 4.5rem 1rem 1rem 1rem; /* Increased top padding to prevent overlap with floating toggle */
+  }
+
+  .mobile-sidebar-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    box-shadow: var(--shadow-md);
+    z-index: 99; /* below modal overlay (which is 100) but above everything else */
+    cursor: pointer;
+    transition: var(--transition);
+  }
+
+  .mobile-sidebar-toggle:hover {
+    background-color: var(--primary-dark, #15803d);
+    transform: scale(1.05);
   }
 }
 
@@ -1033,6 +1061,8 @@ body.dark .badge-icon-circle.globe-bg {
   justify-content: center;
   z-index: 100;
   animation: fadeIn 0.2s ease-out;
+  overflow-y: auto; /* Added to support scrolling when form content exceeds screen height */
+  padding: 2rem 1rem; /* Added padding to prevent layout stretching */
 }
 
 .modal-content {
@@ -1043,6 +1073,7 @@ body.dark .badge-icon-circle.globe-bg {
   width: 90%;
   box-shadow: var(--shadow-lg);
   position: relative;
+  margin: auto; /* Added margin: auto to support vertical centering and correct overflow behavior */
 }
 
 .modal-close {

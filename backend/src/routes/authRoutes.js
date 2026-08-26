@@ -13,6 +13,17 @@ const generateToken = (id) => {
   });
 };
 
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email.trim());
+};
+
+const validatePhone = (phone) => {
+  if (!phone || phone.trim() === '') return true;
+  const digits = phone.replace(/\D/g, '');
+  return digits.length >= 10 && digits.length <= 13;
+};
+
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
@@ -22,6 +33,14 @@ router.post('/register', async (req, res) => {
   try {
     if (!name || !email || !password || !role) {
       return res.status(400).json({ message: 'Please provide name, email, password, and role' });
+    }
+
+    if (!validateEmail(email)) {
+      return res.status(400).json({ message: 'Please provide a valid email address' });
+    }
+
+    if (contactNumber && !validatePhone(contactNumber)) {
+      return res.status(400).json({ message: 'Please provide a valid contact number (10-13 digits)' });
     }
 
     // Check if role is valid
@@ -156,6 +175,10 @@ router.put('/profile', protect, async (req, res) => {
     const user = await User.findById(req.user._id);
 
     if (user) {
+      if (req.body.contactNumber !== undefined && !validatePhone(req.body.contactNumber)) {
+        return res.status(400).json({ message: 'Please provide a valid contact number (10-13 digits)' });
+      }
+
       const updateData = {
         name: req.body.name || user.name,
         contactNumber: req.body.contactNumber !== undefined ? req.body.contactNumber : user.contactNumber,

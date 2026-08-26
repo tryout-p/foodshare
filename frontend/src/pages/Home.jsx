@@ -456,7 +456,7 @@ const Home = () => {
             <h4>For NGOs</h4>
             <ul className="footer-links">
               <li><Link to="/auth">Browse Food Surplus</Link></li>
-              <li><Link to="/auth">Register NGO</Link></li>
+              <li><Link to="/auth" state={{ mode: 'signup' }}>Register NGO</Link></li>
               <li><Link to="/auth">Pickup Schedules</Link></li>
               <li><Link to="/auth">Impact Reports</Link></li>
             </ul>

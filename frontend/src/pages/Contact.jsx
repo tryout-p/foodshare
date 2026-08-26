@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send, CheckCircle, Leaf } from 'lucide-react';
 
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email.trim());
+};
+
 const Contact = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -8,6 +13,7 @@ const Contact = () => {
   const [message, setMessage] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const triggerConfetti = () => {
     // Wait for the DOM element to mount
@@ -39,6 +45,13 @@ const Contact = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setError('');
+
+    if (!validateEmail(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
     setLoading(true);
     // Simulate sending message
     setTimeout(() => {
@@ -141,6 +154,8 @@ const Contact = () => {
                 <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>
                   Fill out the form below and we will route your inquiry to the appropriate coordinator.
                 </p>
+
+                {error && <div className="alert alert-error" style={{ marginBottom: '1.25rem' }}>{error}</div>}
 
                 <form onSubmit={handleSubmit} className="contact-form">
                   <div className="form-group">

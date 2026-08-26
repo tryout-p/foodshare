@@ -1,6 +1,7 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './context/AuthContext';
+import { Menu } from 'lucide-react';
 
 // Core Layout and Pages
 import Navbar from './components/Navbar';
@@ -50,8 +51,16 @@ const DashboardWrapper = () => {
     <div className="dashboard-layout">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%' }}>
-        <Navbar onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%', position: 'relative' }}>
+        
+        {/* Floating mobile toggle button to open the sidebar since Navbar is removed */}
+        <button 
+          className="mobile-sidebar-toggle" 
+          onClick={() => setSidebarOpen(true)}
+          aria-label="Open Sidebar"
+        >
+          <Menu size={20} />
+        </button>
 
         <main className="main-panel">
           <Routes>
@@ -111,9 +120,20 @@ const AppContent = () => {
   );
 };
 
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
+
 const App = () => {
   return (
     <Router>
+      <ScrollToTop />
       <AuthProvider>
         <AppContent />
       </AuthProvider>

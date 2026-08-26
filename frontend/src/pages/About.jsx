@@ -77,7 +77,7 @@ const About = () => {
               </div>
             </div>
             <div style={{ marginTop: '1.5rem' }}>
-              <Link to="/auth" className="btn-primary" style={{ display: 'inline-flex' }}>
+              <Link to="/auth" state={{ mode: 'signup' }} className="btn-primary" style={{ display: 'inline-flex' }}>
                 Join Us Today
               </Link>
             </div>
