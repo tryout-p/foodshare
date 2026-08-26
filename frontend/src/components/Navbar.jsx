@@ -1,14 +1,16 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { Bell, Menu, Leaf, User, LogOut, Info, Gift, MessageSquare, CheckCircle, Truck } from 'lucide-react';
+import { Bell, Menu, X, Leaf, User, LogOut, Info, Gift, MessageSquare, CheckCircle, Truck } from 'lucide-react';
 
 const Navbar = ({ onMenuToggle }) => {
   const { user, token, logout } = useContext(AuthContext);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const dropdownRef = useRef(null);
+  const mobileMenuRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -50,6 +52,22 @@ const Navbar = ({ onMenuToggle }) => {
     document.addEventListener('mousedown', handleOutsideClick);
     return () => document.removeEventListener('mousedown', handleOutsideClick);
   }, []);
+
+  // Close mobile menu on outside click
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target)) {
+        setShowMobileMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setShowMobileMenu(false);
+  }, [location.pathname]);
 
   const handleNotificationClick = async (notif) => {
     if (!notif.read) {
@@ -174,15 +192,43 @@ const Navbar = ({ onMenuToggle }) => {
             </Link>
           </>
         ) : (
-          <div className="navbar-nav-links">
-            <Link to="/" className={`navbar-link-item ${isActive('/') ? 'active' : ''}`}>Home</Link>
-            <Link to="/about" className={`navbar-link-item ${isActive('/about') ? 'active' : ''}`}>About</Link>
-            <Link to="/contact" className={`navbar-link-item ${isActive('/contact') ? 'active' : ''}`}>Contact</Link>
-            <Link to="/auth" state={{ mode: 'login' }} className={`navbar-link-item login-link ${isActive('/auth') ? 'active' : ''}`}>Login</Link>
-            <Link to="/auth" state={{ mode: 'signup' }} className="btn-header-dashboard get-started-btn">
-              Get Started
-            </Link>
-          </div>
+          <>
+            {/* Desktop Navbar Links */}
+            <div className="navbar-nav-links">
+              <Link to="/" className={`navbar-link-item ${isActive('/') ? 'active' : ''}`}>Home</Link>
+              <Link to="/about" className={`navbar-link-item ${isActive('/about') ? 'active' : ''}`}>About</Link>
+              <Link to="/contact" className={`navbar-link-item ${isActive('/contact') ? 'active' : ''}`}>Contact</Link>
+              <Link to="/auth" state={{ mode: 'login' }} className={`navbar-link-item login-link ${isActive('/auth') ? 'active' : ''}`}>Login</Link>
+              <Link to="/auth" state={{ mode: 'signup' }} className="btn-header-dashboard get-started-btn">
+                Get Started
+              </Link>
+            </div>
+
+            {/* Mobile Navbar Menu Container */}
+            <div className="mobile-menu-container" ref={mobileMenuRef}>
+              <button 
+                className="mobile-menu-toggle-btn"
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
+                aria-label="Toggle Menu"
+              >
+                {showMobileMenu ? <X size={24} /> : <Menu size={24} />}
+              </button>
+
+              {/* Mobile Navbar Menu Dropdown */}
+              {showMobileMenu && (
+                <div className="mobile-navbar-dropdown glass-panel">
+                  <Link to="/" className={`mobile-nav-item ${isActive('/') ? 'active' : ''}`}>Home</Link>
+                  <Link to="/about" className={`mobile-nav-item ${isActive('/about') ? 'active' : ''}`}>About</Link>
+                  <Link to="/contact" className={`mobile-nav-item ${isActive('/contact') ? 'active' : ''}`}>Contact</Link>
+                  <div className="mobile-nav-divider"></div>
+                  <Link to="/auth" state={{ mode: 'login' }} className={`mobile-nav-item mobile-login ${isActive('/auth') ? 'active' : ''}`}>Login</Link>
+                  <Link to="/auth" state={{ mode: 'signup' }} className="mobile-get-started-btn">
+                    Get Started
+                  </Link>
+                </div>
+              )}
+            </div>
+          </>
         )}
       </div>
 

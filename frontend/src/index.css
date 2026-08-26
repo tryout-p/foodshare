@@ -1709,6 +1709,100 @@ body.dark .badge-icon-circle.globe-bg {
   transform: translateY(-1px);
 }
 
+/* Mobile Menu Container & Toggle Button */
+.mobile-menu-container {
+  display: none;
+  position: relative;
+}
+
+.mobile-menu-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: var(--transition);
+}
+
+.mobile-menu-toggle-btn:hover {
+  background-color: rgba(21, 128, 61, 0.05);
+  color: var(--primary);
+}
+
+/* Mobile Navbar Dropdown */
+.mobile-navbar-dropdown {
+  position: absolute;
+  top: calc(100% + 1rem);
+  right: 0;
+  width: 240px;
+  border-radius: 18px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 100;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  background: var(--card-bg) !important;
+}
+
+.mobile-nav-item {
+  color: var(--text-muted) !important;
+  font-weight: 600;
+  font-size: 1.05rem;
+  padding: 0.65rem 1rem;
+  border-radius: 12px;
+  transition: var(--transition);
+  display: block;
+}
+
+.mobile-nav-item:hover {
+  color: var(--primary) !important;
+  background-color: rgba(21, 128, 61, 0.05);
+}
+
+.mobile-nav-item.active {
+  color: var(--primary) !important;
+  background-color: rgba(21, 128, 61, 0.08);
+  font-weight: 700;
+}
+
+.mobile-nav-divider {
+  height: 1px;
+  background-color: var(--border);
+  margin: 0.25rem 0.5rem;
+}
+
+.mobile-login {
+  color: var(--primary) !important;
+}
+
+.mobile-get-started-btn {
+  background-color: var(--primary) !important;
+  color: white !important;
+  text-align: center;
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+  border-radius: 14px;
+  transition: var(--transition);
+  display: block;
+}
+
+.mobile-get-started-btn:hover {
+  background-color: var(--primary-hover) !important;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-container {
+    display: block;
+  }
+}
+
 .landing-header .brand-logo {
   color: var(--text-main) !important;
 }
