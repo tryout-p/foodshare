@@ -11,6 +11,8 @@ import DonorDashboard from './pages/DonorDashboard';
 import NgoDashboard from './pages/NgoDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import Profile from './pages/Profile';
+import About from './pages/About';
+import Contact from './pages/Contact';
 
 // Route Guard for authenticated users
 const ProtectedRoute = ({ children, allowedRoles }) => {
@@ -47,33 +49,33 @@ const DashboardWrapper = () => {
   return (
     <div className="dashboard-layout">
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      
+
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%' }}>
         <Navbar onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
-        
+
         <main className="main-panel">
           <Routes>
             {/* Donor Routes */}
             <Route path="donor" element={<ProtectedRoute allowedRoles={['Donor']}><DonorDashboard /></ProtectedRoute>} />
             <Route path="donor/donations" element={<ProtectedRoute allowedRoles={['Donor']}><DonorDashboard /></ProtectedRoute>} />
             <Route path="donor/pickups" element={<ProtectedRoute allowedRoles={['Donor']}><DonorDashboard /></ProtectedRoute>} />
-            
+
             {/* NGO Routes */}
             <Route path="ngo" element={<ProtectedRoute allowedRoles={['NGO']}><NgoDashboard /></ProtectedRoute>} />
             <Route path="ngo/available" element={<ProtectedRoute allowedRoles={['NGO']}><NgoDashboard /></ProtectedRoute>} />
             <Route path="ngo/requests" element={<ProtectedRoute allowedRoles={['NGO']}><NgoDashboard /></ProtectedRoute>} />
             <Route path="ngo/pickups" element={<ProtectedRoute allowedRoles={['NGO']}><NgoDashboard /></ProtectedRoute>} />
-            
+
             {/* Admin Routes */}
             <Route path="admin" element={<ProtectedRoute allowedRoles={['Admin']}><AdminDashboard /></ProtectedRoute>} />
             <Route path="admin/users" element={<ProtectedRoute allowedRoles={['Admin']}><AdminDashboard /></ProtectedRoute>} />
             <Route path="admin/donations" element={<ProtectedRoute allowedRoles={['Admin']}><AdminDashboard /></ProtectedRoute>} />
             <Route path="admin/requests" element={<ProtectedRoute allowedRoles={['Admin']}><AdminDashboard /></ProtectedRoute>} />
             <Route path="admin/pickups" element={<ProtectedRoute allowedRoles={['Admin']}><AdminDashboard /></ProtectedRoute>} />
-            
+
             {/* Profile Route */}
             <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-            
+
             {/* Fallback inside dashboard */}
             <Route path="*" element={<Navigate to={`/dashboard/${user?.role.toLowerCase()}`} replace />} />
           </Routes>
@@ -92,14 +94,16 @@ const AppContent = () => {
     <>
       {/* Show main landing page Header ONLY on non-dashboard paths */}
       {!isDashboardRoute && <Navbar />}
-      
+
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
         <Route path="/auth" element={<Auth />} />
-        
+
         {/* Mount nested dashboard paths */}
         <Route path="/dashboard/*" element={<DashboardWrapper />} />
-        
+
         {/* Global Fallback Redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

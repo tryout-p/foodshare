@@ -3,7 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { 
   ArrowRight, Leaf, ShieldAlert, Gift, ClipboardCheck, 
-  Truck, Heart, HelpCircle, Users, ExternalLink, Mail, Phone, MapPin
+  Truck, Heart, HelpCircle, Users, ExternalLink, Mail, Phone, MapPin,
+  Moon, Sun, Globe
 } from 'lucide-react';
 
 const Home = () => {
@@ -11,8 +12,23 @@ const Home = () => {
   const navigate = useNavigate();
   const [showDemoModal, setShowDemoModal] = useState(false);
   const [dbStats, setDbStats] = useState({ donors: 3, ngos: 2, meals: 224 });
+  const [displayStats, setDisplayStats] = useState({ donors: 0, ngos: 0, meals: 0 });
   const [liveListings, setLiveListings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+  
+  // Interactive Calculator State
+  const [surplusKg, setSurplusKg] = useState(30);
+  
+  // FAQ Accordion State
+  const [activeFaq, setActiveFaq] = useState(null);
+  
+  const faqData = [
+    { q: "Is the donated food safe to consume?", a: "Yes. Donors must follow strict hygienic guidelines. Food must be packed hot or immediately refrigerated. Banquets and hotels specify prep and expiry timestamps so NGOs can distribute them within safe windows." },
+    { q: "Who handles the transportation/pickup?", a: "Verified NGOs coordinate directly with the donor. Once a request is accepted, the NGO assigns a volunteer or vehicle team to pickup food from the donor's address at the scheduled window." },
+    { q: "How are NGOs verified?", a: "Our administration verifies NGO registration certificates, tax status documents, and operating address records to prevent abuse and ensure food reaches real families." },
+    { q: "Are there tax benefits for commercial donors?", a: "Yes, registered businesses and hotels receive tax-deductible receipts and impact certificate summaries directly from verified NGOs via our tracking reports." }
+  ];
 
   // Fetch metrics and preview listings from database
   useEffect(() => {
@@ -61,6 +77,44 @@ const Home = () => {
     fetchLandingData();
   }, []);
 
+  // Stats Dynamic Count-up Animation
+  useEffect(() => {
+    if (loading) return;
+    const duration = 1200; // 1.2 seconds
+    const steps = 30;
+    const intervalTime = duration / steps;
+    
+    let step = 0;
+    const timer = setInterval(() => {
+      step++;
+      setDisplayStats({
+        donors: Math.min(Math.round((dbStats.donors / steps) * step), dbStats.donors),
+        ngos: Math.min(Math.round((dbStats.ngos / steps) * step), dbStats.ngos),
+        meals: Math.min(Math.round((dbStats.meals / steps) * step), dbStats.meals)
+      });
+      
+      if (step >= steps) {
+        clearInterval(timer);
+      }
+    }, intervalTime);
+    
+    return () => clearInterval(timer);
+  }, [dbStats, loading]);
+
+  // Theme sync effect
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
+  };
+
   const handleDemoLogin = async (email, password) => {
     try {
       const loggedUser = await login(email, password);
@@ -83,20 +137,30 @@ const Home = () => {
 
   return (
     <div className="landing-container">
+      {/* Decorative Floating Background Elements for enhanced moving UI */}
+      <div className="floating-decorations">
+        <div className="decor-item leaf-1"><Leaf size={24} color="var(--primary)" opacity={0.15} /></div>
+        <div className="decor-item leaf-2"><Leaf size={16} color="var(--primary)" opacity={0.12} /></div>
+        <div className="decor-item leaf-3"><Leaf size={20} color="var(--primary)" opacity={0.1} /></div>
+        <div className="decor-item heart-1"><Heart size={16} color="#ef4444" opacity={0.1} /></div>
+        <div className="decor-item gift-1"><Gift size={20} color="var(--primary)" opacity={0.08} /></div>
+      </div>
+
       {/* 1. HERO SECTION */}
       <main className="landing-hero">
         <div className="hero-content">
           <div className="badge-tag">
             <Leaf size={14} fill="currentColor" />
-            Food waste redistribution platform
+            Together Against Food Waste
           </div>
           
           <h1 className="hero-title">
-            Good food deserves a plate, not a bin.
+            Share Food. <br />
+            <span>Spread Happiness.</span>
           </h1>
           
           <p className="hero-subtitle">
-            FoodShare links surplus food from donors to nearby NGOs, and keeps every donation, request and pickup tracked end to end.
+            Food Share connects people, restaurants, donors and NGOs to redistribute surplus food and make sure good food reaches someone who needs it.
           </p>
           
           <div className="hero-actions">
@@ -106,58 +170,77 @@ const Home = () => {
               </Link>
             ) : (
               <>
-                <Link to="/auth" className="btn-primary">
-                  Create an account <ArrowRight size={18} />
+                <Link to="/auth" state={{ mode: 'signup' }} className="btn-primary">
+                  Start Sharing <Leaf size={18} />
                 </Link>
-                <button className="btn-secondary" onClick={() => setShowDemoModal(true)}>
-                  Try a demo account
-                </button>
+                <Link to="/about" className="btn-secondary">
+                  Learn More <ArrowRight size={18} />
+                </Link>
               </>
             )}
           </div>
           
-          {/* Landing page statistics */}
+          {/* Landing page statistics with count-up animation */}
           <div className="hero-stats">
-            <div className="stat-box">
+            <div className="stat-box hover-lift">
               <p className="stat-box-label">Donors</p>
-              <h3 className="stat-box-value">{dbStats.donors}</h3>
+              <h3 className="stat-box-value">{displayStats.donors}</h3>
             </div>
-            <div className="stat-box">
+            <div className="stat-box hover-lift">
               <p className="stat-box-label">NGO partners</p>
-              <h3 className="stat-box-value">{dbStats.ngos}</h3>
+              <h3 className="stat-box-value">{displayStats.ngos}</h3>
             </div>
-            <div className="stat-box">
+            <div className="stat-box hover-lift">
               <p className="stat-box-label">Meals saved</p>
-              <h3 className="stat-box-value">{dbStats.meals}</h3>
+              <h3 className="stat-box-value">{displayStats.meals}</h3>
             </div>
           </div>
         </div>
 
-        {/* Live listings preview panel */}
-        <div className="preview-card" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <div>
-            <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: '700', marginBottom: '0.25rem' }}>Live listings preview</h3>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Real-time updates of surplus meals available in the area.</p>
-          </div>
+        {/* Interactive Visual Image & Badge Layout instead of Listings Preview */}
+        <div className="hero-interactive-visual">
+          <div className="visual-backdrop-glow"></div>
           
-          <div className="preview-list">
-            {loading ? (
-              <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
-                Loading live preview...
-              </div>
-            ) : (
-              liveListings.map((listing) => (
-                <div key={listing._id} className="preview-item">
-                  <div className="preview-info">
-                    <h4 style={{ fontWeight: 600 }}>{listing.foodName}</h4>
-                    <p style={{ fontSize: '0.75rem' }}>{listing.category} · {listing.quantity}</p>
-                  </div>
-                  <span className={`badge ${getStatusClass(listing.status)}`}>
-                    {listing.status}
-                  </span>
-                </div>
-              ))
-            )}
+          {/* Main Visual Image Card */}
+          <div className="visual-image-card float-animation">
+            <div className="food-box-icon">
+              <svg width="70" height="70" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 20C18 14 26 8 34 11C40 13 38 22 38 22" fill="#86efac" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M36 20C34 13 44 9 48 14C51 18 44 24 44 24" fill="#86efac" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M16 26L30 14L34 18L22 30L16 26Z" fill="#fb923c" stroke="#ea580c" strokeWidth="2" strokeLinejoin="round" />
+                <path d="M30 14C31.5 10.5 35 7.5 33 5C30 2.5 28 6.5 28 8.5" stroke="#16a34a" strokeWidth="2" strokeLinecap="round" />
+                <path d="M12 28H52L47 52H17L12 28Z" fill="#581c87" stroke="#3b0764" strokeWidth="2.5" strokeLinejoin="round" />
+                <path d="M9 24H55V29H9V24Z" fill="#6b21a8" stroke="#3b0764" strokeWidth="2.5" strokeLinejoin="round" />
+                <rect x="22" y="36" width="20" height="6" rx="3" fill="#a21caf" opacity="0.3" />
+              </svg>
+            </div>
+            <h4>Fresh Food</h4>
+            <p>Ready to be shared</p>
+            <span className="visual-status-tag">
+              <span className="dot"></span> Available Now
+            </span>
+          </div>
+
+          {/* Floating badge 1: Top Right */}
+          <div className="visual-badge-float float-badge-1">
+            <div className="badge-icon-circle heart-bg">
+              <Heart size={16} fill="currentColor" color="currentColor" />
+            </div>
+            <div className="badge-content-text">
+              <h5>Food Saved</h5>
+              <p>Every meal matters</p>
+            </div>
+          </div>
+
+          {/* Floating badge 2: Bottom Left */}
+          <div className="visual-badge-float float-badge-2">
+            <div className="badge-icon-circle globe-bg">
+              <Globe size={16} color="currentColor" />
+            </div>
+            <div className="badge-content-text">
+              <h5>Make an Impact</h5>
+              <p>Reduce food waste</p>
+            </div>
           </div>
         </div>
       </main>
@@ -177,7 +260,57 @@ const Home = () => {
         </div>
       </div>
 
-      {/* 3. HOW IT WORKS SECTION */}
+      {/* 3. INTERACTIVE IMPACT CALCULATOR WIDGET */}
+      <section className="home-section calculator-container">
+        <div className="home-section-title">
+          <h2>Food Surplus Impact Estimator</h2>
+          <p>Drag the slider below to project the positive impact your kitchen can generate by redistributing surplus meals instead of discarding them.</p>
+        </div>
+
+        <div className="calculator-widget hover-lift">
+          <div className="widget-slider-box">
+            <div className="slider-header">
+              <span>Your Daily Food Surplus:</span>
+              <strong className="slider-value">{surplusKg} kg</strong>
+            </div>
+            <input 
+              type="range"
+              min="5"
+              max="200"
+              step="5"
+              value={surplusKg}
+              onChange={(e) => setSurplusKg(parseInt(e.target.value))}
+              className="surplus-range-input"
+            />
+            <div className="slider-footer-labels">
+              <span>5 kg (Cafe)</span>
+              <span>200 kg (Banquet / Hotel)</span>
+            </div>
+          </div>
+
+          <div className="widget-metrics-grid">
+            <div className="metric-indicator-box">
+              <span className="metric-indicator-emoji">🍽️</span>
+              <h4>{Math.round(surplusKg * 2.2)}</h4>
+              <p>Meals Saved / Day</p>
+            </div>
+            
+            <div className="metric-indicator-box">
+              <span className="metric-indicator-emoji">🌱</span>
+              <h4>{(surplusKg * 2.5).toFixed(1)} kg</h4>
+              <p>CO2 Saved / Day</p>
+            </div>
+
+            <div className="metric-indicator-box">
+              <span className="metric-indicator-emoji">💧</span>
+              <h4>{Math.round(surplusKg * 950).toLocaleString()} L</h4>
+              <p>Water Saved / Day</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 4. HOW IT WORKS SECTION */}
       <section className="home-section">
         <div className="home-section-title">
           <h2>How FoodShare Works</h2>
@@ -185,7 +318,7 @@ const Home = () => {
         </div>
 
         <div className="home-features-grid">
-          <div className="feature-step-card">
+          <div className="feature-step-card hover-lift">
             <div className="feature-step-number">1</div>
             <Gift size={28} color="var(--primary)" />
             <h3 style={{ fontSize: '1.15rem' }}>Donors List Surplus</h3>
@@ -194,7 +327,7 @@ const Home = () => {
             </p>
           </div>
 
-          <div className="feature-step-card">
+          <div className="feature-step-card hover-lift">
             <div className="feature-step-number">2</div>
             <ClipboardCheck size={28} color="var(--primary)" />
             <h3 style={{ fontSize: '1.15rem' }}>NGOs Request Food</h3>
@@ -203,7 +336,7 @@ const Home = () => {
             </p>
           </div>
 
-          <div className="feature-step-card">
+          <div className="feature-step-card hover-lift">
             <div className="feature-step-number">3</div>
             <Truck size={28} color="var(--primary)" />
             <h3 style={{ fontSize: '1.15rem' }}>Tracked Delivery</h3>
@@ -214,7 +347,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 4. OUR IMPACT & VOLUNTEERS PHOTO SECTION */}
+      {/* 5. OUR IMPACT & VOLUNTEERS PHOTO SECTION */}
       <section className="home-section-bg">
         <div className="home-about-grid">
           <div className="about-text">
@@ -254,7 +387,33 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 5. FEATURED PARTNERS SECTION */}
+      {/* 6. FAQ ACCORDION SECTION */}
+      <section className="home-section faq-accordion-container">
+        <div className="home-section-title">
+          <h2>Frequently Asked Questions</h2>
+          <p>Find quick answers regarding food safety guidelines, verification, and logistics tracking.</p>
+        </div>
+
+        <div className="accordion-wrapper">
+          {faqData.map((faq, index) => (
+            <div 
+              key={index} 
+              className={`accordion-row ${activeFaq === index ? 'row-expanded' : ''}`}
+              onClick={() => setActiveFaq(activeFaq === index ? null : index)}
+            >
+              <div className="accordion-trigger">
+                <h3>{faq.q}</h3>
+                <span className="accordion-icon-toggle">{activeFaq === index ? '−' : '+'}</span>
+              </div>
+              <div className="accordion-content">
+                <p>{faq.a}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 7. FEATURED PARTNERS SECTION */}
       <section className="home-section">
         <div className="home-section-title">
           <h2>Our Core Supporters</h2>
@@ -270,7 +429,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* 6. SLATE FOOTER SECTION */}
+      {/* 8. SLATE FOOTER SECTION */}
       <footer className="footer-container">
         <div className="footer-grid">
           <div className="footer-about">
@@ -328,6 +487,11 @@ const Home = () => {
           </div>
         </div>
       </footer>
+
+      {/* Floating Theme Switcher Button */}
+      <button className="theme-switcher-btn" onClick={toggleTheme} aria-label="Toggle Theme">
+        {theme === 'light' ? <Moon size={22} /> : <Sun size={22} />}
+      </button>
 
       {/* Demo Modal */}
       {showDemoModal && (

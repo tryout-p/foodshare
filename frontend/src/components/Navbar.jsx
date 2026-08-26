@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { Bell, Menu, Leaf, User, LogOut, Info, Gift, MessageSquare, CheckCircle, Truck } from 'lucide-react';
 
@@ -10,6 +10,9 @@ const Navbar = ({ onMenuToggle }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isActive = (path) => location.pathname === path;
 
   // Fetch notifications
   const fetchNotifications = async () => {
@@ -63,7 +66,7 @@ const Navbar = ({ onMenuToggle }) => {
       }
     }
     setShowDropdown(false);
-    
+
     // Redirect to relevant tab/dashboard based on notification type
     if (notif.type === 'Donation') {
       navigate(user.role === 'NGO' ? '/dashboard/ngo' : '/dashboard/donor');
@@ -100,7 +103,7 @@ const Navbar = ({ onMenuToggle }) => {
   };
 
   return (
-    <header className="landing-header" style={{ position: 'sticky', top: 0, zIndex: 40, backgroundColor: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(10px)', borderBottom: '1px solid var(--border)' }}>
+    <header className="landing-header">
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
         {user && (
           <button className="sidebar-toggle-btn" onClick={onMenuToggle} style={{ display: 'none', color: 'var(--text-main)' }}>
@@ -115,13 +118,13 @@ const Navbar = ({ onMenuToggle }) => {
         </Link>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
         {user ? (
           <>
             {/* Notification Bell */}
             <div style={{ position: 'relative' }} ref={dropdownRef}>
-              <button 
-                className="notification-bell-btn" 
+              <button
+                className="notification-bell-btn"
                 onClick={() => setShowDropdown(!showDropdown)}
                 aria-label="Toggle notifications"
               >
@@ -144,8 +147,8 @@ const Navbar = ({ onMenuToggle }) => {
                       </div>
                     ) : (
                       notifications.map(notif => (
-                        <div 
-                          key={notif._id} 
+                        <div
+                          key={notif._id}
                           className={`notification-item ${!notif.read ? 'unread' : ''}`}
                           onClick={() => handleNotificationClick(notif)}
                         >
@@ -171,11 +174,15 @@ const Navbar = ({ onMenuToggle }) => {
             </Link>
           </>
         ) : (
-          <>
-            <Link to="/auth" className="btn-header-dashboard">
+          <div className="navbar-nav-links">
+            <Link to="/" className={`navbar-link-item ${isActive('/') ? 'active' : ''}`}>Home</Link>
+            <Link to="/about" className={`navbar-link-item ${isActive('/about') ? 'active' : ''}`}>About</Link>
+            <Link to="/contact" className={`navbar-link-item ${isActive('/contact') ? 'active' : ''}`}>Contact</Link>
+            <Link to="/auth" state={{ mode: 'login' }} className={`navbar-link-item login-link ${isActive('/auth') ? 'active' : ''}`}>Login</Link>
+            <Link to="/auth" state={{ mode: 'signup' }} className="btn-header-dashboard get-started-btn">
               Get Started
             </Link>
-          </>
+          </div>
         )}
       </div>
 
