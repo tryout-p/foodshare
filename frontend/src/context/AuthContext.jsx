@@ -139,11 +139,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const changePassword = async (currentPassword, newPassword) => {
+  const requestPasswordChangeOTP = async (currentPassword, newPassword) => {
     setError(null);
     try {
-      const response = await fetch('/api/auth/password', {
-        method: 'PUT',
+      const response = await fetch('/api/auth/password/send-otp', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
@@ -154,7 +154,31 @@ export const AuthProvider = ({ children }) => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Password update failed');
+        throw new Error(data.message || 'Failed to request verification code');
+      }
+      return data;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  };
+
+  const confirmPasswordChange = async (otp) => {
+    setError(null);
+    try {
+      const response = await fetch('/api/auth/password', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ otp }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Verification failed');
       }
       return data;
     } catch (err) {
@@ -172,7 +196,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, error, login, register, logout, updateProfile, changePassword }}>
+    <AuthContext.Provider value={{ user, token, loading, error, login, register, logout, updateProfile, requestPasswordChangeOTP, confirmPasswordChange }}>
       {children}
     </AuthContext.Provider>
   );

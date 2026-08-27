@@ -3,8 +3,12 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { User, Notification } from '../config/db.js';
 import { protect } from '../middleware/authMiddleware.js';
+import { sendOTPEmail } from '../utils/mailer.js';
 
 const router = express.Router();
+
+// Short-term store for pending password changes mapping userId to { hashedNewPassword, otp, expiresAt }
+const passwordOtpStore = new Map();
 
 // Helper to generate JWT token
 const generateToken = (id) => {
@@ -204,10 +208,10 @@ router.put('/profile', protect, async (req, res) => {
   }
 });
 
-// @desc    Change user password
-// @route   PUT /api/auth/password
+// @desc    Request Password Change OTP
+// @route   POST /api/auth/password/send-otp
 // @access  Private
-router.put('/password', protect, async (req, res) => {
+router.post('/password/send-otp', protect, async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
   try {
@@ -215,24 +219,86 @@ router.put('/password', protect, async (req, res) => {
       return res.status(400).json({ message: 'Please provide both current password and new password' });
     }
 
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters' });
+    }
+
     const user = await User.findById(req.user._id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Verify current password
+    // Verify current password matches DB
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Current password is incorrect' });
     }
 
-    // Hash and update new password
+    // Hash new password early so we don't store plain text passwords in memory
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
 
-    await User.findByIdAndUpdate(req.user._id, { password: hashedPassword });
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = Date.now() + 5 * 60 * 1000; // Valid for 5 minutes
 
-    // Notify user
+    // Store in-memory
+    passwordOtpStore.set(req.user._id.toString(), {
+      hashedNewPassword,
+      otp,
+      expiresAt,
+    });
+
+    // Send OTP email
+    await sendOTPEmail(user.email, otp, user.name);
+
+    res.json({ message: 'Verification OTP sent to your registered email' });
+  } catch (error) {
+    console.error('OTP request error:', error.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// @desc    Verify OTP and change user password
+// @route   PUT /api/auth/password
+// @access  Private
+router.put('/password', protect, async (req, res) => {
+  const { otp } = req.body;
+
+  try {
+    if (!otp) {
+      return res.status(400).json({ message: 'Please provide the OTP code' });
+    }
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Retrieve pending password update record
+    const pendingRequest = passwordOtpStore.get(user._id.toString());
+    if (!pendingRequest) {
+      return res.status(400).json({ message: 'No pending password change request found or session has expired' });
+    }
+
+    // Check expiration
+    if (Date.now() > pendingRequest.expiresAt) {
+      passwordOtpStore.delete(user._id.toString());
+      return res.status(400).json({ message: 'Verification OTP has expired. Please try again.' });
+    }
+
+    // Verify OTP code matching
+    if (pendingRequest.otp !== otp.trim()) {
+      return res.status(400).json({ message: 'Invalid verification OTP' });
+    }
+
+    // Save pre-hashed password to database
+    await User.findByIdAndUpdate(user._id, { password: pendingRequest.hashedNewPassword });
+
+    // Clear verification cache
+    passwordOtpStore.delete(user._id.toString());
+
+    // Notify user in system notifications
     await Notification.create({
       recipient: user._id.toString(),
       title: 'Password Changed Successfully',
@@ -243,7 +309,7 @@ router.put('/password', protect, async (req, res) => {
 
     res.json({ message: 'Password changed successfully' });
   } catch (error) {
-    console.error('Password change error:', error.message);
+    console.error('Password change verification error:', error.message);
     res.status(500).json({ message: 'Server error' });
   }
 });

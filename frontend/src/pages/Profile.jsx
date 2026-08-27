@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
-import { User, Phone, MapPin, KeyRound, Save } from 'lucide-react';
+import { User, Phone, MapPin, KeyRound, Save, MailCheck, ShieldAlert } from 'lucide-react';
 
 const validatePhone = (phone) => {
   if (!phone || phone.trim() === '') return true;
@@ -9,7 +9,7 @@ const validatePhone = (phone) => {
 };
 
 const Profile = () => {
-  const { user, updateProfile, changePassword } = useContext(AuthContext);
+  const { user, updateProfile, requestPasswordChangeOTP, confirmPasswordChange } = useContext(AuthContext);
 
   // Profile Details Form State
   const [name, setName] = useState(user?.name || '');
@@ -20,6 +20,10 @@ const Profile = () => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+
+  // OTP Verification State
+  const [showOTPInput, setShowOTPInput] = useState(false);
+  const [otp, setOtp] = useState('');
 
   // Alerts
   const [profileMsg, setProfileMsg] = useState('');
@@ -66,16 +70,47 @@ const Profile = () => {
 
     setPassLoading(true);
     try {
-      await changePassword(currentPassword, newPassword);
+      const res = await requestPasswordChangeOTP(currentPassword, newPassword);
+      setPassMsg(res.message || 'Verification code sent to your email!');
+      setShowOTPInput(true);
+    } catch (err) {
+      setPassErr(err.message || 'Failed to request verification code');
+    } finally {
+      setPassLoading(false);
+    }
+  };
+
+  const handleVerifyOTP = async (e) => {
+    e.preventDefault();
+    setPassMsg('');
+    setPassErr('');
+
+    if (!otp || otp.trim().length !== 6) {
+      setPassErr('Please enter a valid 6-digit OTP code');
+      return;
+    }
+
+    setPassLoading(true);
+    try {
+      await confirmPasswordChange(otp.trim());
       setPassMsg('Password changed successfully!');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
+      setOtp('');
+      setShowOTPInput(false);
     } catch (err) {
-      setPassErr(err.message || 'Failed to update password');
+      setPassErr(err.message || 'OTP verification failed');
     } finally {
       setPassLoading(false);
     }
+  };
+
+  const handleCancelOTP = () => {
+    setShowOTPInput(false);
+    setOtp('');
+    setPassMsg('');
+    setPassErr('');
   };
 
   return (
@@ -176,65 +211,114 @@ const Profile = () => {
         {/* Right Column: Security changes */}
         <div className="content-card">
           <div className="content-card-header">
-            <h3>Change Account Password</h3>
+            <h3>{showOTPInput ? 'Verify Email Code' : 'Change Account Password'}</h3>
           </div>
 
           {passMsg && <div className="alert alert-success">{passMsg}</div>}
           {passErr && <div className="alert alert-error">{passErr}</div>}
 
-          <form onSubmit={handleUpdatePassword} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <div className="form-group">
-              <label>Current Password *</label>
-              <div style={{ position: 'relative' }}>
-                <input
-                  type="password"
-                  className="form-input"
-                  placeholder="••••••••"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  style={{ paddingLeft: '2.5rem' }}
-                  required
-                />
-                <KeyRound size={16} style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
+          {showOTPInput ? (
+            <form onSubmit={handleVerifyOTP} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <div style={{ textAlign: 'center', padding: '0.5rem 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+                <MailCheck size={44} style={{ color: 'var(--primary)' }} />
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.4' }}>
+                  A verification code has been sent to your email <strong>{user?.email}</strong>.
+                  Please enter the 6-digit OTP below to update your password.
+                </p>
               </div>
-            </div>
 
-            <div className="form-group">
-              <label>New Password *</label>
-              <div style={{ position: 'relative' }}>
-                <input
-                  type="password"
-                  className="form-input"
-                  placeholder="•••••••• (Min 6 chars)"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  style={{ paddingLeft: '2.5rem' }}
-                  required
-                />
-                <KeyRound size={16} style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
+              <div className="form-group">
+                <label>Verification OTP Code *</label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="Enter 6-digit OTP"
+                    maxLength={6}
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    style={{ paddingLeft: '2.5rem', textAlign: 'center', letterSpacing: '0.25rem', fontSize: '1.1rem', fontWeight: 'bold' }}
+                    required
+                  />
+                  <MailCheck size={16} style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
+                </div>
               </div>
-            </div>
 
-            <div className="form-group">
-              <label>Confirm New Password *</label>
-              <div style={{ position: 'relative' }}>
-                <input
-                  type="password"
-                  className="form-input"
-                  placeholder="••••••••"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  style={{ paddingLeft: '2.5rem' }}
-                  required
-                />
-                <KeyRound size={16} style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
+              <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+                <button 
+                  type="button" 
+                  className="btn-form" 
+                  style={{ flex: 1, backgroundColor: '#64748b', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }} 
+                  onClick={handleCancelOTP}
+                  disabled={passLoading}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="btn-form" 
+                  style={{ flex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }} 
+                  disabled={passLoading}
+                >
+                  {passLoading ? 'Verifying...' : 'Verify & Change'}
+                </button>
               </div>
-            </div>
+            </form>
+          ) : (
+            <form onSubmit={handleUpdatePassword} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+              <div className="form-group">
+                <label>Current Password *</label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="password"
+                    className="form-input"
+                    placeholder="••••••••"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    style={{ paddingLeft: '2.5rem' }}
+                    required
+                  />
+                  <KeyRound size={16} style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
+                </div>
+              </div>
 
-            <button type="submit" className="btn-form" style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', backgroundColor: '#334155' }} disabled={passLoading}>
-              <KeyRound size={16} /> {passLoading ? 'Updating Password...' : 'Change Password'}
-            </button>
-          </form>
+              <div className="form-group">
+                <label>New Password *</label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="password"
+                    className="form-input"
+                    placeholder="•••••••• (Min 6 chars)"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    style={{ paddingLeft: '2.5rem' }}
+                    required
+                  />
+                  <KeyRound size={16} style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
+                </div>
+              </div>
+
+              <div className="form-group">
+                <label>Confirm New Password *</label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="password"
+                    className="form-input"
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    style={{ paddingLeft: '2.5rem' }}
+                    required
+                  />
+                  <KeyRound size={16} style={{ position: 'absolute', left: '0.85rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-light)' }} />
+                </div>
+              </div>
+
+              <button type="submit" className="btn-form" style={{ marginTop: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', backgroundColor: '#334155' }} disabled={passLoading}>
+                <KeyRound size={16} /> {passLoading ? 'Sending OTP...' : 'Change Password'}
+              </button>
+            </form>
+          )}
         </div>
       </div>
     </div>
