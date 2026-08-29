@@ -125,10 +125,10 @@ router.get('/received', protect, authorizeRoles('Donor'), async (req, res) => {
   }
 });
 
-// @desc    Approve a request (by Donor)
+// @desc    Approve a request (by Donor or Admin)
 // @route   PUT /api/requests/:id/approve
-// @access  Private (Donor only)
-router.put('/:id/approve', protect, authorizeRoles('Donor'), async (req, res) => {
+// @access  Private (Donor or Admin)
+router.put('/:id/approve', protect, authorizeRoles('Donor', 'Admin'), async (req, res) => {
   try {
     const request = await Request.findById(req.params.id);
     if (!request) {
@@ -140,8 +140,8 @@ router.put('/:id/approve', protect, authorizeRoles('Donor'), async (req, res) =>
       return res.status(404).json({ message: 'Associated donation not found' });
     }
 
-    // Verify donor ownership
-    if (donation.donor.toString() !== req.user._id.toString()) {
+    // Verify donor ownership (bypass if Admin)
+    if (donation.donor.toString() !== req.user._id.toString() && req.user.role !== 'Admin') {
       return res.status(403).json({ message: 'Not authorized to approve this request' });
     }
 
@@ -188,16 +188,16 @@ router.put('/:id/approve', protect, authorizeRoles('Donor'), async (req, res) =>
     await Notification.create({
       recipient: request.ngo.toString(),
       title: 'Food Request Approved!',
-      message: `Your request for "${donation.foodName}" has been approved by "${req.user.name}". Please schedule a pickup.`,
+      message: `Your request for "${donation.foodName}" has been approved by ${req.user.role === 'Admin' ? 'Admin' : `"${req.user.name}"`}. Please schedule a pickup.`,
       type: 'Approval',
       read: false
     });
 
     // Notify Donor
     await Notification.create({
-      recipient: req.user._id.toString(),
+      recipient: donation.donor.toString(),
       title: 'Request Approved',
-      message: `You approved NGO "${request.ngoName}"'s request for "${donation.foodName}".`,
+      message: `Request for your donation "${donation.foodName}" has been approved by ${req.user.role === 'Admin' ? 'Admin' : 'you'}.`,
       type: 'Approval',
       read: false
     });
@@ -206,7 +206,7 @@ router.put('/:id/approve', protect, authorizeRoles('Donor'), async (req, res) =>
     await Notification.create({
       recipient: 'All',
       title: 'Request Approved',
-      message: `Donor "${req.user.name}" approved request from NGO "${request.ngoName}" for "${donation.foodName}".`,
+      message: `${req.user.role === 'Admin' ? 'Admin' : `Donor "${req.user.name}"`} approved request from NGO "${request.ngoName}" for "${donation.foodName}".`,
       type: 'Approval',
       read: false
     });
@@ -218,10 +218,10 @@ router.put('/:id/approve', protect, authorizeRoles('Donor'), async (req, res) =>
   }
 });
 
-// @desc    Reject a request (by Donor)
+// @desc    Reject a request (by Donor or Admin)
 // @route   PUT /api/requests/:id/reject
-// @access  Private (Donor only)
-router.put('/:id/reject', protect, authorizeRoles('Donor'), async (req, res) => {
+// @access  Private (Donor or Admin)
+router.put('/:id/reject', protect, authorizeRoles('Donor', 'Admin'), async (req, res) => {
   try {
     const request = await Request.findById(req.params.id);
     if (!request) {
@@ -233,8 +233,8 @@ router.put('/:id/reject', protect, authorizeRoles('Donor'), async (req, res) => 
       return res.status(404).json({ message: 'Associated donation not found' });
     }
 
-    // Verify donor ownership
-    if (donation.donor.toString() !== req.user._id.toString()) {
+    // Verify donor ownership (bypass if Admin)
+    if (donation.donor.toString() !== req.user._id.toString() && req.user.role !== 'Admin') {
       return res.status(403).json({ message: 'Not authorized to reject this request' });
     }
 
@@ -255,7 +255,7 @@ router.put('/:id/reject', protect, authorizeRoles('Donor'), async (req, res) => 
     await Notification.create({
       recipient: request.ngo.toString(),
       title: 'Request Rejected',
-      message: `Your request for "${donation.foodName}" was rejected by "${req.user.name}".`,
+      message: `Your request for "${donation.foodName}" was rejected by ${req.user.role === 'Admin' ? 'Admin' : `"${req.user.name}"`}.`,
       type: 'Approval',
       read: false
     });

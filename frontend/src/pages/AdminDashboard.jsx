@@ -3,7 +3,8 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { 
   Users, Gift, ClipboardList, MapPin, Trash2, 
-  Settings, Award, Search, ShieldAlert, CheckCircle, Database, ArrowLeft, ArrowRight
+  Settings, Award, Search, ShieldAlert, CheckCircle, Database, ArrowLeft, ArrowRight,
+  Check, X
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -97,8 +98,6 @@ const AdminDashboard = () => {
   }, [token, activeTab]);
 
   const handleDelete = async (id, collection) => {
-    if (!window.confirm(`Are you sure you want to permanently delete this ${collection.slice(0, -1)}?`)) return;
-
     try {
       const res = await fetch(`/api/admin/${collection}/${id}`, {
         method: 'DELETE',
@@ -114,6 +113,49 @@ const AdminDashboard = () => {
       }
     } catch (err) {
       setError(err.message);
+    }
+  };
+
+  const handleRequestApproval = async (reqId, approve) => {
+    const action = approve ? 'approve' : 'reject';
+    try {
+      const res = await fetch(`/api/requests/${reqId}/${action}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setMessage(`Request successfully ${approve ? 'approved' : 'rejected'}!`);
+        fetchStats();
+        fetchTabDetails();
+      } else {
+        setError(data.message || `Failed to process request`);
+      }
+    } catch (err) {
+      setError('Server error');
+    }
+  };
+
+  const handlePickupStatus = async (pickupId, nextStatus) => {
+    try {
+      const res = await fetch(`/api/pickups/${pickupId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: nextStatus })
+      });
+      if (res.ok) {
+        setMessage(`Pickup marked as ${nextStatus}!`);
+        fetchStats();
+        fetchTabDetails();
+      } else {
+        const data = await res.json();
+        setError(data.message || 'Failed to update pickup status');
+      }
+    } catch (err) {
+      setError('Server error');
     }
   };
 
@@ -463,13 +505,34 @@ const AdminDashboard = () => {
                             </td>
                             <td>{getStatusBadge(r.status)}</td>
                             <td>
-                              <button 
-                                className="btn-icon-action danger" 
-                                title="Delete Request"
-                                onClick={() => handleDelete(r._id, 'requests')}
-                              >
-                                <Trash2 size={14} />
-                              </button>
+                              <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                                {r.status === 'Pending' && (
+                                  <>
+                                    <button 
+                                      className="btn-icon-action" 
+                                      style={{ backgroundColor: 'var(--status-avail-txt)', color: 'white' }}
+                                      title="Approve Request"
+                                      onClick={() => handleRequestApproval(r._id, true)}
+                                    >
+                                      <Check size={14} />
+                                    </button>
+                                    <button 
+                                      className="btn-icon-action danger" 
+                                      title="Reject Request"
+                                      onClick={() => handleRequestApproval(r._id, false)}
+                                    >
+                                      <X size={14} />
+                                    </button>
+                                  </>
+                                )}
+                                <button 
+                                  className="btn-icon-action danger" 
+                                  title="Delete Request"
+                                  onClick={() => handleDelete(r._id, 'requests')}
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ))}
@@ -505,13 +568,42 @@ const AdminDashboard = () => {
                             </td>
                             <td>{getStatusBadge(p.status)}</td>
                             <td>
-                              <button 
-                                className="btn-icon-action danger" 
-                                title="Delete Pickup"
-                                onClick={() => handleDelete(p._id, 'pickups')}
-                              >
-                                <Trash2 size={14} />
-                              </button>
+                              <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                                {(p.status === 'Pending' || p.status === 'Scheduled') && (
+                                  <>
+                                    <button 
+                                      className="btn-card-action"
+                                      style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem', backgroundColor: 'var(--primary)' }}
+                                      onClick={() => handlePickupStatus(p._id, 'Picked Up')}
+                                    >
+                                      Mark Picked Up
+                                    </button>
+                                    <button 
+                                      className="btn-card-action"
+                                      style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem', backgroundColor: 'var(--status-avail-txt)' }}
+                                      onClick={() => handlePickupStatus(p._id, 'Delivered')}
+                                    >
+                                      Mark Delivered
+                                    </button>
+                                  </>
+                                )}
+                                {p.status === 'Picked Up' && (
+                                  <button 
+                                    className="btn-card-action"
+                                    style={{ padding: '0.3rem 0.6rem', fontSize: '0.75rem', backgroundColor: 'var(--status-avail-txt)' }}
+                                    onClick={() => handlePickupStatus(p._id, 'Delivered')}
+                                  >
+                                    Mark Delivered
+                                  </button>
+                                )}
+                                <button 
+                                  className="btn-icon-action danger" 
+                                  title="Delete Pickup"
+                                  onClick={() => handleDelete(p._id, 'pickups')}
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         ))}

@@ -13,7 +13,7 @@ router.get('/', protect, async (req, res) => {
     let notifications = [];
     if (req.user.role === 'Admin') {
       notifications = await Notification.find({
-        $in: [req.user._id.toString(), 'All']
+        recipient: { $in: [req.user._id.toString(), 'All'] }
       });
     } else {
       notifications = await Notification.find({

@@ -582,14 +582,23 @@ const NgoDashboard = () => {
                             </span>
                           </td>
                           <td>
-                            {pick.status === 'Scheduled' && (
-                              <button 
-                                className="btn-card-action"
-                                style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
-                                onClick={() => handlePickupStatus(pick._id, 'Picked Up')}
-                              >
-                                Mark Picked Up
-                              </button>
+                            {(pick.status === 'Pending' || pick.status === 'Scheduled') && (
+                              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                                <button 
+                                  className="btn-card-action"
+                                  style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
+                                  onClick={() => handlePickupStatus(pick._id, 'Picked Up')}
+                                >
+                                  Mark Picked Up
+                                </button>
+                                <button 
+                                  className="btn-card-action"
+                                  style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem', backgroundColor: 'var(--status-avail-txt)' }}
+                                  onClick={() => handlePickupStatus(pick._id, 'Delivered')}
+                                >
+                                  Mark Delivered
+                                </button>
+                              </div>
                             )}
                             {pick.status === 'Picked Up' && (
                               <button 
@@ -603,11 +612,6 @@ const NgoDashboard = () => {
                             {pick.status === 'Delivered' && (
                               <span style={{ color: 'var(--status-avail-txt)', fontSize: '0.8rem', fontWeight: 600 }}>
                                 Completed ✓
-                              </span>
-                            )}
-                            {pick.status === 'Pending' && (
-                              <span style={{ color: 'var(--text-light)', fontSize: '0.8rem' }}>
-                                Awaiting Date/Time
                               </span>
                             )}
                           </td>

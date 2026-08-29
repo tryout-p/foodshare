@@ -143,7 +143,6 @@ const DonorDashboard = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this listing?')) return;
     try {
       const res = await fetch(`/api/donations/${id}`, {
         method: 'DELETE',
@@ -163,8 +162,6 @@ const DonorDashboard = () => {
 
   const handleRequestApproval = async (reqId, approve) => {
     const action = approve ? 'approve' : 'reject';
-    if (!window.confirm(`Are you sure you want to ${action} this request?`)) return;
-
     try {
       const res = await fetch(`/api/requests/${reqId}/${action}`, {
         method: 'PUT',

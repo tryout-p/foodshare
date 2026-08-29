@@ -202,8 +202,8 @@ const PickupSchema = new mongoose.Schema({
   ngo: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   donor: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   donation: { type: mongoose.Schema.Types.ObjectId, ref: 'Donation', required: true },
-  pickupDate: { type: String, required: true },
-  pickupTime: { type: String, required: true },
+  pickupDate: { type: String, default: '' },
+  pickupTime: { type: String, default: '' },
   pickupAddress: { type: String, required: true },
   status: { type: String, enum: ['Pending', 'Scheduled', 'Picked Up', 'Delivered'], default: 'Pending' }
 }, { timestamps: true });
